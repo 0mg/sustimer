@@ -5,7 +5,7 @@ all = sustimer.exe
 LIBS = kernel32 shell32 user32 gdi32 ole32 powrprof
 
 # GCC
-GCCFLAGS = $(AR:%=-o $@ -mwindows -nostartfiles -s ${LIBS:%=-l%})
+GCCFLAGS = $(AR:%=-o $@ -DUNICODE -mwindows -nostartfiles -s ${LIBS:%=-l%})
 GCRC = $(AR:%=windres)
 GCRFLAGS = $(AR:%=-o $*.o)
 GCRM = $(AR:%=rm -f)
@@ -13,7 +13,7 @@ GCRM = $(AR:%=rm -f)
 # VS
 _LIBS = $(LIBS) %
 _VSLIBS = $(_LIBS: =.lib )
-_VSFLAGS = /MD /link /ENTRY:__start__ $(_VSLIBS:%=)
+_VSFLAGS = /DUNICODE /MD /link /ENTRY:__start__ $(_VSLIBS:%=)
 _VSRC = rc
 _VSRFLAGS = /fo $*.o
 _VSRM = del /f

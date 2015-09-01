@@ -1,4 +1,3 @@
-#define UNICODE
 #include <windows.h>
 #include <powrprof.h>
 /* #include <shobjidl.h>
@@ -151,7 +150,7 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
     SetTextColor(hdc, TEXT_COLOR);
     // logo
     SelectObject(hdc, logo.font);
-    DrawText(hdc, TEXT("\u263e"), -1, &canvas,
+    DrawTextW(hdc, L"\u263e", -1, &canvas,
       DT_LEFT);
     // count down
     SelectObject(hdc, counter.font);
