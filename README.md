@@ -1,3 +1,9 @@
+## this software is
+
+Suspend PC Timer for Windows.
+
+command `sustimer.exe 120` to suspend after 120 seconds.
+
 ## how to compile
 
 use [gcc](http://gcc.gnu.org/) on command line.
@@ -11,23 +17,6 @@ or
 ```
 gcc *.c -mwindows -lole32 -lpowrprof
 ```
-
-### important options
-
-* `-mwindows` to make Windows GUI **(non-console)** application.
-* `-l*` to link library
-  * -lpowrprof = link "libpowrprof.a" to use SetSuspendState(..).
-
-### other options
-
-* `-DUNICODE` for utf-8 source code.
-* `-s` to decrease file size.
-* `-nostartfiles` to make more tiny. (but it may not work well)
-
-## without compile
-
-* [Released EXEs](https://github.com/0mg/windows/releases)
-* [EXE old archives](https://bitbucket.org/0mg/windows/downloads/)
 
 ## another compile
 
