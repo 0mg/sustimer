@@ -263,7 +263,7 @@ int WINAPI WinMain(HINSTANCE hi, HINSTANCE hp, LPSTR cl, int cs) {
   hwnd = CreateWindowEx(
     WS_EX_TOPMOST,
     (LPCTSTR)MAKELONG(RegisterClassEx(&wc), 0), TEXT("Suspend PC Timer"),
-    WS_VISIBLE | WS_SYSMENU,
+    WS_VISIBLE | WS_SYSMENU | WS_MINIMIZEBOX,
     GetSystemMetrics(SM_CXSCREEN) / 2 - WND_WIDTH / 2,
     GetSystemMetrics(SM_CYSCREEN) / 2 - WND_HEIGHT / 2,
     WND_WIDTH,
