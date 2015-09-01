@@ -81,6 +81,8 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
   static struct {
     int out;
     int rest;
+    int fixed;
+    int fixedPrev;
   } atimer;
 
   static struct {
@@ -106,8 +108,13 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
     if (atimer.rest <= 0) {
       atimeover = TRUE;
       PostMessage(hwnd, WM_CLOSE, 0, 0);
+      atimer.rest = 0;
+      KillTimer(hwnd, WTIMER_ID);
+      counting = FALSE;
     }
   }
+
+  atimer.fixed = atimer.rest / 1000 + counting;
 
   switch (msg) {
   case WM_CREATE:
@@ -125,10 +132,10 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
     logo.font = counter.font;
     // progress frame
     progress.pen = CreatePen(PS_SOLID, PRG_BORDER, TEXT_COLOR);
-    progress.brush = (HBRUSH)GetStockObject(NULL_BRUSH);
+    progress.brush = (HBRUSH)CreateSolidBrush(TEXT_COLOR);
     // progress bar
-    progbar.pen = (HPEN)GetStockObject(NULL_PEN);
-    progbar.brush = (HBRUSH)CreateSolidBrush(TEXT_COLOR);
+    progbar.pen = progress.pen;
+    progbar.brush = (HBRUSH)CreateSolidBrush(WND_BG);
     // Set: client area
     GetClientRect(hwnd, &canvas);
     // Set: progressbar area
@@ -141,7 +148,12 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
     return 0;
   case WM_TIMER:
     // repaint
-    InvalidateRect(hwnd, NULL, TRUE);
+    if (atimer.fixed != atimer.fixedPrev) {
+      InvalidateRect(hwnd, NULL, TRUE);
+      atimer.fixedPrev = atimer.fixed;
+    } else {
+      InvalidateRect(hwnd, &progvas, FALSE);
+    }
     return 0;
   case WM_PAINT: {
     PAINTSTRUCT ps;
@@ -154,7 +166,7 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
       DT_LEFT);
     // count down
     SelectObject(hdc, counter.font);
-    wsprintf(counter.text, TEXT("%d"), atimer.rest / 1000 + counting);
+    wsprintf(counter.text, TEXT("%d"), atimer.fixed);
     DrawText(hdc, counter.text, -1, &canvas,
       DT_CENTER | DT_VCENTER | DT_SINGLELINE);
     // progress frame
@@ -169,10 +181,10 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
     SelectObject(hdc, progbar.pen);
     SelectObject(hdc, progbar.brush);
     Rectangle(hdc,
-      progvas.left,
-      progvas.top,
       progvas.left +
         (progvas.right - progvas.left) / ((float)atimer.out / atimer.rest),
+      progvas.top,
+      progvas.right,
       progvas.bottom);
     // close charm
     if (hover) {
