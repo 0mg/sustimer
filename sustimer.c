@@ -238,14 +238,16 @@ int WINAPI WinMain(HINSTANCE hi, HINSTANCE hp, LPSTR cl, int cs) {
   wc.cbWndExtra = 0;
   wc.hInstance = hi;
   wc.hIcon =
-    (HICON)LoadImage(NULL, IDI_APPLICATION, IMAGE_ICON, 0, 0, LR_SHARED);
+    (HICON)LoadImage(hi, TEXT("APPICON"), IMAGE_ICON, 0, 0, LR_DEFAULTCOLOR);
+    //(HICON)LoadImage(NULL, IDI_APPLICATION, IMAGE_ICON, 0, 0, LR_SHARED);
   wc.hCursor =
     (HCURSOR)LoadImage(NULL, IDC_HAND, IMAGE_CURSOR, 0, 0, LR_SHARED);
   wc.hbrBackground = CreateSolidBrush(WND_BG);
   wc.lpszMenuName = NULL;
   wc.lpszClassName = TEXT("Suspend PC Timer Window Class");
   wc.hIconSm =
-    (HICON)LoadImage(NULL, IDI_APPLICATION, IMAGE_ICON, 16, 16, LR_SHARED);
+    (HICON)LoadImage(hi, TEXT("APPICON"), IMAGE_ICON, 16, 16, LR_DEFAULTCOLOR);
+    //(HICON)LoadImage(NULL, IDI_APPLICATION, IMAGE_ICON, 16, 16, LR_SHARED);
   // Main Window: Create, Show
   hwnd = CreateWindowEx(
     WS_EX_TOPMOST,

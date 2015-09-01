@@ -1,26 +1,44 @@
+# exe name
+all = sustimer.exe
+
 # Library names
 LIBS = kernel32 shell32 user32 gdi32 ole32 powrprof
 
 # GCC
 GCCFLAGS = $(AR:%=-o $@ -mwindows -nostartfiles -s ${LIBS:%=-l%})
+GCRC = $(AR:%=windres)
+GCRFLAGS = $(AR:%=-o $*.o)
+GCRM = $(AR:%=rm -f)
 
-# VC
-TEMP1 = $(LIBS) %
-VCLIBS = $(TEMP1: =.lib )
-TEMP2 = /MD /link /ENTRY:__start__ $(VCLIBS)
-VCFLAGS = $(TEMP2:%=)
+# VS
+_LIBS = $(LIBS) %
+_VSLIBS = $(_LIBS: =.lib )
+_VSFLAGS = /MD /link /ENTRY:__start__ $(_VSLIBS:%=)
+_VSRC = rc
+_VSRFLAGS = /fo $*.o
+_VSRM = del /f
+VSFLAGS = $(_VSFLAGS:%=)
+VSRC = $(_VSRC:%=)
+VSRFLAGS = $(_VSRFLAGS:%=)
+VSRM = $(_VSRM:%=)
 
-# GCC or VC
-CFLAGS = $(GCCFLAGS) $(VCFLAGS)
+# GCC or VS
+CFLAGS = $(GCCFLAGS) $(VSFLAGS)
+RC = $(GCRC) $(VSRC)
+RFLAGS = $(GCRFLAGS) $(VSRFLAGS)
+RM = $(GCRM) $(VSRM)
 
 # main
-.PHONY: all clean
-all: sustimer.exe
+.PHONY: all
+all: $(all) clean
 
-.SUFFIXES: .c .exe
+.SUFFIXES: .exe .o .rc .c
 
-.c.exe:
-	$(CC) $< $(CFLAGS)
+$(all): $(all:.exe=.o)
+	$(CC) $*.o $*.c $(CFLAGS)
+
+$(all:.exe=.o): $(all:.exe=.rc)
+	$(RC) $(RFLAGS) $*.rc
 
 clean:
-	del *.obj
+	$(RM) *.obj *.o
