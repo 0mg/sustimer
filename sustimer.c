@@ -158,6 +158,8 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
   case WM_PAINT: {
     PAINTSTRUCT ps;
     HDC hdc = BeginPaint(hwnd, &ps);
+    int progpos =
+      (progvas.right - progvas.left) / ((float)atimer.out / atimer.rest);
     SetBkMode(hdc, TRANSPARENT);
     SetTextColor(hdc, TEXT_COLOR);
     // logo
@@ -175,14 +177,13 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
     Rectangle(hdc,
       progvas.left,
       progvas.top,
-      progvas.right,
+      progvas.left + progpos,
       progvas.bottom);
     // progress content
     SelectObject(hdc, progbar.pen);
     SelectObject(hdc, progbar.brush);
     Rectangle(hdc,
-      progvas.left +
-        (progvas.right - progvas.left) / ((float)atimer.out / atimer.rest),
+      progvas.left + progpos,
       progvas.top,
       progvas.right,
       progvas.bottom);
