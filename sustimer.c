@@ -91,7 +91,7 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
     LOGBRUSH logbrush;
     HBRUSH brush;
     TCHAR text[8];
-  } counter, closer, logo, progress, progbar;
+  } counter, closer, logo, progress, progbar, bg;
 
   static DWORD stime = 0;
   static BOOL counting = FALSE;
@@ -143,6 +143,8 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
     progvas.top = canvas.bottom - 40;
     progvas.right = canvas.right - 20;
     progvas.bottom = canvas.bottom - 20;
+    // background
+    bg.brush = (HBRUSH)CreateSolidBrush(WND_BG);
     // repaint
     InvalidateRect(hwnd, NULL, TRUE);
     return 0;
@@ -155,13 +157,21 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
       InvalidateRect(hwnd, &progvas, FALSE);
     }
     return 0;
+  case WM_ERASEBKGND: {
+    return 1;
+  }
   case WM_PAINT: {
     PAINTSTRUCT ps;
-    HDC hdc = BeginPaint(hwnd, &ps);
+    HDC odc = BeginPaint(hwnd, &ps);
+    HDC hdc = CreateCompatibleDC(odc);
+    HBITMAP bmp = CreateCompatibleBitmap(odc, WND_WIDTH, WND_HEIGHT);
     int progpos =
       (progvas.right - progvas.left) / ((float)atimer.out / atimer.rest);
+    SelectObject(hdc, bmp);
     SetBkMode(hdc, TRANSPARENT);
     SetTextColor(hdc, TEXT_COLOR);
+    // background
+    FillRect(hdc, &canvas, bg.brush);
     // logo
     SelectObject(hdc, logo.font);
     DrawTextW(hdc, L"\u263e", -1, &canvas,
@@ -195,6 +205,8 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
       Rectangle(hdc, canvas.left, canvas.top, canvas.right, canvas.bottom);
       DrawText(hdc, TEXT("x"), -1, &canvas, DT_RIGHT);
     }
+    BitBlt(odc, 0, 0, WND_WIDTH, WND_HEIGHT, hdc, 0, 0, SRCCOPY);
+    DeleteDC(hdc);
     EndPaint(hwnd, &ps);
     setTBProgress(hwnd, atimer.rest, atimer.out);
     if (!stime) {
