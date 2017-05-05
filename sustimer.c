@@ -207,6 +207,7 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
     }
     BitBlt(odc, 0, 0, WND_WIDTH, WND_HEIGHT, hdc, 0, 0, SRCCOPY);
     DeleteDC(hdc);
+    DeleteObject(bmp);
     EndPaint(hwnd, &ps);
     setTBProgress(hwnd, atimer.rest, atimer.out);
     if (!stime) {
