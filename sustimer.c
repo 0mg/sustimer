@@ -246,6 +246,12 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
       break;
     }
     return 0;
+  case WM_POWERBROADCAST:
+    if (wp == PBT_APMSUSPEND) {
+      PostMessage(hwnd, WM_CLOSE, 0, 0);
+      return 0;
+    }
+    break;
   }
   return DefWindowProc(hwnd, msg, wp, lp);
 }
