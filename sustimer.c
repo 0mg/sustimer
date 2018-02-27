@@ -191,7 +191,15 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
       DT_LEFT);
     // count down
     SelectObject(hdc, counter.font);
-    wsprintf(counter.text, TEXT("%d"), atimer.fixed);
+    if (atimer.fixed >= 3600) {
+      wsprintf(counter.text, TEXT("%d:%02d:%02d"),
+        atimer.fixed / 3600, (atimer.fixed % 3600) / 60, atimer.fixed % 60);
+    } else if (atimer.fixed >= 60) {
+      wsprintf(counter.text, TEXT("%d:%02d"),
+        (atimer.fixed % 3600) / 60, atimer.fixed % 60);
+    } else {
+      wsprintf(counter.text, TEXT("%d"), atimer.fixed);
+    }
     DrawText(hdc, counter.text, -1, &canvas,
       DT_CENTER | DT_VCENTER | DT_SINGLELINE);
     // progress frame
