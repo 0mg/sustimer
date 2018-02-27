@@ -3,11 +3,11 @@
 APPICON ICON "sustimer.ico"
 
 VS_VERSION_INFO VERSIONINFO 
-FILEVERSION 1,7,0,0
+FILEVERSION 2,0,0,0
 FILETYPE VFT_APP {
   BLOCK "StringFileInfo" {
     BLOCK "041103A4" {
-      VALUE "FileDescription", "Timer to suspend PC\0"
+      VALUE "FileDescription", "Suspend PC Timer\0"
     }
   }
   BLOCK "VarFileInfo" {

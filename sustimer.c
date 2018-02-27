@@ -145,10 +145,10 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
     logo.font = counter.font;
     // progress frame
     progress.pen = CreatePen(PS_SOLID, PRG_BORDER, TEXT_COLOR);
-    progress.brush = (HBRUSH)CreateSolidBrush(TEXT_COLOR);
+    progress.brush = (HBRUSH)GetStockObject(NULL_BRUSH);
     // progress bar
     progbar.pen = progress.pen;
-    progbar.brush = (HBRUSH)CreateSolidBrush(WND_BG);
+    progbar.brush = (HBRUSH)CreateSolidBrush(TEXT_COLOR);
     // Set: client area
     GetClientRect(hwnd, &canvas);
     // Set: progressbar area
@@ -178,8 +178,7 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
     HDC odc = BeginPaint(hwnd, &ps);
     HDC hdc = CreateCompatibleDC(odc);
     HBITMAP bmp = CreateCompatibleBitmap(odc, WND_WIDTH, WND_HEIGHT);
-    int progpos =
-      (progvas.right - progvas.left) / ((float)atimer.out / atimer.rest);
+    int progpos;
     SelectObject(hdc, bmp);
     SetBkMode(hdc, TRANSPARENT);
     SetTextColor(hdc, TEXT_COLOR);
@@ -202,21 +201,24 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
     }
     DrawText(hdc, counter.text, -1, &canvas,
       DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+    // progress bar
+    progpos = (progvas.right - progvas.left) /
+      ((float)atimer.out / atimer.rest);
     // progress frame
     SelectObject(hdc, progress.pen);
     SelectObject(hdc, progress.brush);
     Rectangle(hdc,
       progvas.left,
       progvas.top,
-      progvas.left + progpos,
+      progvas.right,
       progvas.bottom);
     // progress content
     SelectObject(hdc, progbar.pen);
     SelectObject(hdc, progbar.brush);
     Rectangle(hdc,
-      progvas.left + progpos,
+      progvas.left,
       progvas.top,
-      progvas.right,
+      progvas.left + progpos,
       progvas.bottom);
     // close charm
     if (hover) {
