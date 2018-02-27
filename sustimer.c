@@ -64,11 +64,24 @@ int getATimeout() {
   LPWSTR *argv = CommandLineToArgvW(GetCommandLineW(), &argc);
   if (argc > 1) {
     LPWSTR ts = argv[1];
-    int tn = 0;
-    while (*ts) {
-      tn = (tn * 10) + (*ts++ - '0');
+    int a = 0, b = 0 ,c = 0;
+    int *p = NULL;
+    while (*ts) { // alt for swscanf(ts,"%d:%d:%d",&a,&b,&c) in msvcrt.dll
+      if (*ts >= '0' && *ts <= '9') {
+        if (p == NULL) p = &a;
+        *p = (*p * 10) + (*ts - '0');
+      } else if (*ts == ':') { // hh:mm:ss OR mm:ss OR ss
+        p = p == &a ? &b : &c;
+      }
+      ts++;
     }
-    return tn * MS;
+    if (p == &c) { // hh:mm:ss
+      return (a * 3600 + b * 60 + c) * MS;
+    } else if (p == &b) { // mm:ss
+      return (a * 60 + b) * MS;
+    } else if (p == &a) { // ss
+      return a * MS;
+    } else ; // p == NULL
   }
   return ATIMEOUT_DEFAULT * MS;
 }
