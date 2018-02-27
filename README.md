@@ -4,6 +4,9 @@ Suspend PC Timer for Windows.
 
 command `sustimer.exe 120` to suspend after 120 seconds.
 
+* `sustimer 1:00:00` to 1 hours.
+* `sustimer 3:33` to 3 minutes 33 seconds.
+
 ## how to compile
 
 use [gcc](http://gcc.gnu.org/) on command line.
