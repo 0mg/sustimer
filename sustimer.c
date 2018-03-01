@@ -32,7 +32,7 @@ void __start__() {
   ExitProcess(WinMain(GetModuleHandle(NULL), 0, "", 0));
 }
 
-BOOL atimeover;
+BOOL atimeover = FALSE;
 
 void startMouseTrack(HWND hwnd) {
   TRACKMOUSEEVENT tme;
@@ -64,8 +64,7 @@ int getATimeout() {
   LPWSTR *argv = CommandLineToArgvW(GetCommandLineW(), &argc);
   if (argc > 1) {
     LPWSTR ts = argv[1];
-    int a = 0, b = 0 ,c = 0;
-    int *p = NULL;
+    int a = 0, b = 0, c = 0, *p = NULL, time = 0;
     while (*ts) { // alt for swscanf(ts,"%d:%d:%d",&a,&b,&c) in msvcrt.dll
       if (*ts >= '0' && *ts <= '9') {
         if (p == NULL) p = &a;
@@ -75,13 +74,19 @@ int getATimeout() {
       }
       ts++;
     }
+    // every `time` can be less than zero
     if (p == &c) { // hh:mm:ss
-      return (a * 3600 + b * 60 + c) * MS;
+      time = (a * 3600 + b * 60 + c) * MS;
     } else if (p == &b) { // mm:ss
-      return (a * 60 + b) * MS;
+      time = (a * 60 + b) * MS;
     } else if (p == &a) { // ss
-      return a * MS;
-    } else ; // p == NULL
+      time = a * MS;
+    } else { // p == NULL (e.g. run `sustimer.exe abc`)
+      time = -1;
+    }
+    if (time >= 0) {
+      return time;
+    }
   }
   return ATIMEOUT_DEFAULT * MS;
 }
@@ -103,10 +108,10 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
     HPEN pen;
     LOGBRUSH logbrush;
     HBRUSH brush;
-    TCHAR text[8];
+    TCHAR text[20]; // timer max: 2147483 = "596:31:23\0" (10 length)
   } counter, closer, logo, progress, progbar, bg;
 
-  static DWORD stime = 0;
+  static ULONGLONG stime = 0;
   static BOOL counting = FALSE;
   static BOOL timeset = FALSE;
 
@@ -117,7 +122,7 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
   }
 
   if (counting) {
-    atimer.rest = atimer.out - (GetTickCount() - stime);
+    atimer.rest = atimer.out - (GetTickCount64() - stime);
     if (atimer.rest <= 0) {
       atimeover = TRUE;
       PostMessage(hwnd, WM_CLOSE, 0, 0);
@@ -234,7 +239,7 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
     EndPaint(hwnd, &ps);
     setTBProgress(hwnd, atimer.rest, atimer.out);
     if (!stime) {
-      stime = GetTickCount();
+      stime = GetTickCount64();
       counting = TRUE;
     }
     return 0;
@@ -272,7 +277,7 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
   case WM_POWERBROADCAST:
     if (wp == PBT_APMSUSPEND) {
       PostMessage(hwnd, WM_CLOSE, 0, 0);
-      return 0;
+      return TRUE;
     }
     break;
   }
