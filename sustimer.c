@@ -318,7 +318,7 @@ int WINAPI WinMain(HINSTANCE hi, HINSTANCE hp, LPSTR cl, int cs) {
     WND_HEIGHT,
     NULL, NULL, hi, NULL
   );
-  if (hwnd == NULL) return 1;
+  if (hwnd == NULL) return 0; // WinMain must return 0 before message loop
 
   // While msg.message != WM_QUIT
   while (GetMessage(&msg, NULL, 0, 0) > 0) {
