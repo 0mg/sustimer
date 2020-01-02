@@ -26,6 +26,7 @@ DECLARE_INTERFACE(INTERFACE) {
 #define WTIMER_ID 0
 #define WTIMER_OUT 100
 #define ATIMEOUT_DEFAULT 60
+#define C_APPNAME TEXT("Suspend PC Timer")
 
 void __start__() {
   // program will start from here if `gcc -nostartfiles`
@@ -310,7 +311,7 @@ int WINAPI WinMain(HINSTANCE hi, HINSTANCE hp, LPSTR cl, int cs) {
   // Main Window: Create, Show
   hwnd = CreateWindowEx(
     WS_EX_TOPMOST,
-    (LPCTSTR)MAKELONG(RegisterClassEx(&wc), 0), TEXT("Suspend PC Timer"),
+    (LPCTSTR)MAKELONG(RegisterClassEx(&wc), 0), C_APPNAME,
     WS_VISIBLE | WS_SYSMENU | WS_MINIMIZEBOX,
     GetSystemMetrics(SM_CXSCREEN) / 2 - WND_WIDTH / 2,
     GetSystemMetrics(SM_CYSCREEN) / 2 - WND_HEIGHT / 2,
