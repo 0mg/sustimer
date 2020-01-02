@@ -97,6 +97,7 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
   static RECT canvas;
   static RECT progvas;
   static TCHAR tempstr[99];
+  static BOOL awaken;
 
   static struct {
     int out;
@@ -138,6 +139,11 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 
   switch (msg) {
   case WM_CREATE:
+    int argc;
+    LPWSTR *argv = CommandLineToArgvW(GetCommandLineW(), &argc);
+    // check if set 'awake' flag (command option)
+    awaken = (argc > 2 && lstrcmp(argv[2], L"/a") == 0);
+    if (awaken) SetThreadExecutionState(ES_AWAYMODE_REQUIRED | ES_DISPLAY_REQUIRED | ES_SYSTEM_REQUIRED | ES_CONTINUOUS);
     // window timer
     SetTimer(hwnd, WTIMER_ID, WTIMER_OUT, NULL);
     // counter
@@ -193,7 +199,9 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
     FillRect(hdc, &canvas, bg.brush);
     // logo
     SelectObject(hdc, logo.font);
-    DrawTextW(hdc, L"\u263e", -1, &canvas,
+    wsprintf(logo.text, TEXT("%s"), L"\u263e");
+    if (awaken) lstrcat(logo.text, L"\U0001f441");
+    DrawTextW(hdc, logo.text, -1, &canvas,
       DT_LEFT);
     // count down
     SelectObject(hdc, counter.font);
