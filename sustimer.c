@@ -147,12 +147,12 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
     // window timer
     SetTimer(hwnd, WTIMER_ID, WTIMER_OUT, NULL);
     // counter
-    counter.font = CreateFont(90, 0, 0, 0, FW_SEMIBOLD, 0, 0, 0,
+    counter.font = CreateFont(75, 0, 0, 0, FW_SEMIBOLD, 0, 0, 0,
       DEFAULT_CHARSET, 0, 0, 0, 0, NULL);
     // closer
     closer.pen = CreatePen(PS_SOLID, CLS_BORDER, TEXT_COLOR);
     closer.brush = (HBRUSH)GetStockObject(NULL_BRUSH);
-    closer.font = CreateFont(90, 0, 0, 0, FW_SEMIBOLD, 0, 0, 0,
+    closer.font = CreateFont(75, 0, 0, 0, FW_SEMIBOLD, 0, 0, 0,
       SYMBOL_CHARSET, 0, 0, 0, 0, NULL);
     // logo
     logo.font = counter.font;
