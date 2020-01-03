@@ -62,9 +62,9 @@ void setTBProgress(HWND hwnd, int now, int max) {
 
 int getATimeout() {
   int argc;
-  LPWSTR *argv = CommandLineToArgvW(GetCommandLineW(), &argc);
-  if (argc > 1) {
-    LPWSTR ts = argv[1];
+  LPWSTR *argv = CommandLineToArgvW(GetCommandLineW(), &argc), ts = NULL;
+  while (*++argv) if (**argv != '/') ts = *argv;
+  if (ts) {
     int a = 0, b = 0, c = 0, *p = NULL, time = 0;
     while (*ts) { // alt for swscanf(ts,"%d:%d:%d",&a,&b,&c) in msvcrt.dll
       if (*ts >= '0' && *ts <= '9') {
@@ -97,7 +97,7 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
   static RECT canvas;
   static RECT progvas;
   static TCHAR tempstr[99];
-  static BOOL awaken;
+  static BOOL awaken = FALSE;
 
   static struct {
     int out;
@@ -141,8 +141,10 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
   case WM_CREATE:
     int argc;
     LPWSTR *argv = CommandLineToArgvW(GetCommandLineW(), &argc);
-    // check if set 'awake' flag (command option)
-    awaken = (argc > 2 && lstrcmp(argv[2], L"/a") == 0);
+    // command option flags
+    while (*++argv) {
+      awaken |= lstrcmp(*argv, L"/a") == 0;
+    }
     if (awaken) SetThreadExecutionState(ES_AWAYMODE_REQUIRED | ES_DISPLAY_REQUIRED | ES_SYSTEM_REQUIRED | ES_CONTINUOUS);
     // window timer
     SetTimer(hwnd, WTIMER_ID, WTIMER_OUT, NULL);
