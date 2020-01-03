@@ -219,7 +219,7 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
     DrawText(hdc, counter.text, -1, &canvas,
       DT_CENTER | DT_VCENTER | DT_SINGLELINE);
     // window title (caption)
-    wsprintf(tempstr, TEXT("%s - " C_APPNAME), counter.text);
+    wsprintf(tempstr, TEXT("%s%s" C_APPNAME), counter.text, awaken ? L"\U0001f441" : L" - ");
     SetWindowText(hwnd, tempstr);
     // progress bar
     progpos = (progvas.right - progvas.left) /
