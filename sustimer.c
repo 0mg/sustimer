@@ -96,8 +96,8 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
   static BOOL hover;
   static RECT canvas;
   static RECT progvas;
-  static TCHAR tempstr[99];
   static BOOL awaken = FALSE;
+  static TCHAR caption[99];
 
   static struct {
     int out;
@@ -219,8 +219,8 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
     DrawText(hdc, counter.text, -1, &canvas,
       DT_CENTER | DT_VCENTER | DT_SINGLELINE);
     // window title (caption)
-    wsprintf(tempstr, TEXT("%s%s" C_APPNAME), counter.text, awaken ? L"\U0001f441" : L" - ");
-    SetWindowText(hwnd, tempstr);
+    wsprintf(caption, TEXT("%s%s" C_APPNAME), counter.text, awaken ? L"\U0001f441" : L" - ");
+    SetWindowText(hwnd, caption);
     // progress bar
     progpos = (progvas.right - progvas.left) /
       ((float)atimer.out / atimer.rest);
@@ -253,6 +253,7 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
     DeleteObject(bmp);
     EndPaint(hwnd, &ps);
     setTBProgress(hwnd, atimer.rest, atimer.out);
+    // on shown window 1st time
     if (!stime) {
       stime = GetTickCount64();
       counting = TRUE;
