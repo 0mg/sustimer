@@ -128,15 +128,22 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
   if (counting) {
     atimer.rest = atimer.out - (GetTickCount64() - stime);
     if (atimer.rest <= 0) {
-      atimeover = TRUE;
-      PostMessage(hwnd, WM_CLOSE, 0, 0);
-      atimer.rest = 0;
-      KillTimer(hwnd, WTIMER_ID);
-      counting = FALSE;
       if (debugMode) {
         TCHAR s[99];
         wsprintf(s, TEXT("sustimer rest: %d;\n"), atimer.rest);
         OutputDebugString(s);
+      }
+      if (atimer.rest < -3 * MS) {
+        // if timeout after [suspend PC by other app or sys] or freeze
+        atimer.out = 60 * MS;
+        atimer.rest = atimer.out;
+        stime = GetTickCount64();
+      } else {
+        atimeover = TRUE;
+        PostMessage(hwnd, WM_CLOSE, 0, 0);
+        atimer.rest = 0;
+        KillTimer(hwnd, WTIMER_ID);
+        counting = FALSE;
       }
     }
   }
@@ -298,12 +305,6 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
       break;
     }
     return 0;
-  case WM_POWERBROADCAST:
-    if (wp == PBT_APMSUSPEND) {
-      PostMessage(hwnd, WM_CLOSE, 0, 0);
-      return TRUE;
-    }
-    break;
   }
   return DefWindowProc(hwnd, msg, wp, lp);
 }
