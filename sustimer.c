@@ -237,8 +237,12 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
     wsprintf(caption, TEXT("%s%s" C_APPNAME), counter.text, awaken ? L"\U0001f441" : L" - ");
     SetWindowText(hwnd, caption);
     // progress bar
-    progpos = (progvas.right - progvas.left) /
-      ((float)atimer.out / atimer.rest);
+    if (atimer.out <= 0 || atimer.rest <= 0) { // avoid div 0
+      progpos = 0;
+    } else {
+      progpos = (progvas.right - progvas.left) /
+        ((float)atimer.out / atimer.rest);
+    }
     // progress frame
     SelectObject(hdc, progress.pen);
     SelectObject(hdc, progress.brush);
