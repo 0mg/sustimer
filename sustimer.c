@@ -34,6 +34,7 @@ void __start__() {
 }
 
 BOOL atimeover = FALSE;
+BOOL debugMode = FALSE;
 
 void startMouseTrack(HWND hwnd) {
   TRACKMOUSEEVENT tme;
@@ -132,6 +133,11 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
       atimer.rest = 0;
       KillTimer(hwnd, WTIMER_ID);
       counting = FALSE;
+      if (debugMode) {
+        TCHAR s[99];
+        wsprintf(s, TEXT("sustimer rest: %d;\n"), atimer.rest);
+        OutputDebugString(s);
+      }
     }
   }
 
@@ -144,6 +150,7 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
     // command option flags
     while (*++argv) {
       awaken |= lstrcmp(*argv, L"/a") == 0;
+      debugMode |= lstrcmp(*argv, L"/debug") == 0;
     }
     if (awaken) SetThreadExecutionState(ES_AWAYMODE_REQUIRED | ES_DISPLAY_REQUIRED | ES_SYSTEM_REQUIRED | ES_CONTINUOUS);
     // window timer
@@ -203,6 +210,7 @@ LRESULT CALLBACK MainWindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
     SelectObject(hdc, logo.font);
     wsprintf(logo.text, TEXT("%s"), L"\u263e");
     if (awaken) lstrcat(logo.text, L"\U0001f441");
+    if (debugMode) lstrcat(logo.text, L"\U0001f41c");
     DrawTextW(hdc, logo.text, -1, &canvas,
       DT_LEFT);
     // count down
@@ -342,7 +350,12 @@ int WINAPI WinMain(HINSTANCE hi, HINSTANCE hp, LPSTR cl, int cs) {
     DispatchMessage(&msg);
   }
   // Suspend if time over
-  //if (1||atimeover) {TCHAR s[99];wsprintf(s,TEXT("exit code: %d\nsuspend: %d"),msg.wParam,atimeover);MessageBox(NULL,s,s,0);return msg.wParam;}
+  if (debugMode) {
+    TCHAR s[99];
+    wsprintf(s, TEXT("exit code: %d\nsuspend: %d"), msg.wParam, atimeover);
+    MessageBox(NULL, s, s, 0);
+    return msg.wParam;
+  }
   if (atimeover) SetSuspendState(FALSE, FALSE, FALSE);
   return msg.wParam;
 }
